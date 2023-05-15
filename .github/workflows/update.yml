@@ -1,62 +1,24 @@
+name: Authenticate Azure
 on:
-  push:
+  workflow_dispatch:
+  pull_request:
     branches:
-      - main
+      - master
 
 jobs:
-  build-and-bake:
+  publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v2
-      
-      - name: Login to Azure
-        uses: azure/login@v1
+
+      - name: 'Log into Azure using github secret AZURE_CREDENTIALS'
+        uses: Azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
 
-      - name: Create resource group
-        run: az group create --name myn1testresourcegroup --location eastus
-
-      - name: Create virtual machine
+      - name: 'Run az commands'
         run: |
-          az vm create \
-            --resource-group myn1testresourcegroup \
-            --name Nupdate \
-            --image OpenLogic:CentOS:7.9:latest \
-            --admin-username azureuser \
-            --admin-password Password@12345 \
-            --size Standard_B2s \
-            --storage-sku Standard_LRS \
-            --data-disk-sizes-gb 50 \
-            --public-ip-address-allocation static \
-            --nsg-rule SSH \
-            --output table
-
-      - name: Update and patch VM
-        run: |
-          az vm run-command invoke \
-            --resource-group myn1testresourcegroup \
-            --name Nupdate \
-            --command-id RunShellScript \
-            --scripts "sudo yum update -y" \
-            --output table
-
-      - name: Deallocate VM
-        run: az vm deallocate --resource-group myn1testresourcegroup --name Nupdate
-
-      - name: Generalize VM
-        run: az vm generalize --resource-group myn1testresourcegroup --name Nupdate
-
-      - name: Capture VM as image
-        run: |
-          az image create \
-            --resource-group myn1testresourcegroup \
-            --name nupdate_img \
-            --source Nupdate \
-            --os-type Linux \
-            --output table
-
-      - name: Cleanup resources
-        run: |
-          az group delete --name myn1testresourcegroup --yes --no-wait
+          az account show
+          az group list
