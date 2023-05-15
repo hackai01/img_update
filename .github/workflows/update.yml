@@ -1,20 +1,34 @@
-name: Authenticate Azure
-on: push
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  publish:
+  build-and-bake:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: 'Log into Azure using github secret AZURE_CREDENTIALS'
-        uses: Azure/login@v1
+      
+      - name: Login to Azure
+        uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          enable-AzPSSession: true
 
-      - name: 'Run az commands'
+      - name: Create resource group
+        run: az group create --name myn1testresourcegroup --location eastus
+
+      - name: Create virtual machine
         run: |
-          az account show
-          az group list
+          az vm create \
+            --resource-group myn1testresourcegroup \
+            --name Nupdate \
+            --image OpenLogic:CentOS:7.9:latest \
+            --admin-username azureuser \
+            --admin-password Password@12345 \
+            --size Standard_B2s \
+            --storage-sku Standard_LRS \
+            --data-disk-sizes-gb 50 \
+            --public-ip-address-allocation static \
+            --nsg-rule SSH \
+            --output table
