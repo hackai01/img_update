@@ -23,7 +23,7 @@ jobs:
           az vm create \
             --resource-group myn1testresourcegroup \
             --name Nupdate \
-            --image OpenLogic:CentOS:7.9:latest \
+            --image OpenLogic:CentOS:7.5:latest \
             --admin-username azureuser \
             --admin-password Password@12345 \
             --size Standard_B2s \
@@ -32,3 +32,31 @@ jobs:
             --public-ip-address-allocation static \
             --nsg-rule SSH \
             --output table
+
+      - name: Update and patch VM
+        run: |
+          az vm run-command invoke \
+            --resource-group myn1testresourcegroup \
+            --name Nupdate \
+            --command-id RunShellScript \
+            --scripts "sudo yum update -y" \
+            --output table
+
+      - name: Deallocate VM
+        run: az vm deallocate --resource-group myn1testresourcegroup --name Nupdate
+
+      - name: Generalize VM
+        run: az vm generalize --resource-group myn1testresourcegroup --name Nupdate
+
+      - name: Capture VM as image
+        run: |
+          az image create \
+            --resource-group myn1testresourcegroup \
+            --name nupdate_img \
+            --source Nupdate \
+            --os-type Linux \
+            --output table
+
+      - name: Cleanup resources
+        run: |
+          az group delete --name myn1testresourcegroup --yes --no-wait
