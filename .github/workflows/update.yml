@@ -19,7 +19,7 @@ jobs:
             --name Nupdate \
             --image OpenLogic:CentOS:7.5:latest \
             --admin-username azureuser \
-            --admin-password Password@12345 \
+            --admin-password Password@123\
             --size Standard_B2s \
             --storage-sku Standard_LRS \
             --data-disk-sizes-gb 50 \
