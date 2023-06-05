@@ -12,13 +12,10 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Create resource group
-        run: az group create --name myn1testresourcegroup --location eastus
-
       - name: Create virtual machine
         run: |
           az vm create \
-            --resource-group myn1testresourcegroup \
+            --resource-group nUpate_Test \
             --name Nupdate \
             --image OpenLogic:CentOS:7.5:latest \
             --admin-username azureuser \
