@@ -15,7 +15,7 @@ jobs:
       - name: Create virtual machine
         run: |
           az vm create \
-            --resource-group nUpate_Test \
+            --resource-group nUpdate_Test \
             --name Nupdate \
             --image OpenLogic:CentOS:7.5:latest \
             --admin-username azureuser \
