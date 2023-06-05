@@ -30,22 +30,22 @@ jobs:
       - name: Update and patch VM
         run: |
           az vm run-command invoke \
-            --resource-group myn1testresourcegroup \
+            --resource-group nUpdate_Test \
             --name Nupdate \
             --command-id RunShellScript \
             --scripts "sudo yum update -y" \
             --output table
 
       - name: Deallocate VM
-        run: az vm deallocate --resource-group myn1testresourcegroup --name Nupdate
+        run: az vm deallocate --resource-group Nupdate_Test --name Nupdate
 
       - name: Generalize VM
-        run: az vm generalize --resource-group myn1testresourcegroup --name Nupdate
+        run: az vm generalize --resource-group nUpdate_Test --name Nupdate
 
       - name: Capture VM as image
         run: |
           az image create \
-            --resource-group myn1testresourcegroup \
+            --resource-group nUpdate_Test \
             --name nupdate_img \
             --source Nupdate \
             --os-type Linux \
@@ -53,4 +53,4 @@ jobs:
 
       - name: Cleanup resources
         run: |
-          az group delete --name myn1testresourcegroup --yes --no-wait
+          az group delete --name nUpdate_Test --yes --no-wait
