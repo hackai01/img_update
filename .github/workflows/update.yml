@@ -48,7 +48,7 @@ jobs:
       - name: Install the GPG key
         run: |
           az vm run-command invoke \
-          --resource-group Test \
-          --name cis-test1 \
-          --command-id RunShellScript \
-          --scripts "su -c curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg"
+            --resource-group Test \
+            --name cis-test1 \
+            --command-id RunShellScript \
+            --scripts "su -c curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg"
