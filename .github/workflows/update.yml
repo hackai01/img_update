@@ -1,3 +1,5 @@
+name: CIS-CICD
+
 on: push
 
 
@@ -17,7 +19,7 @@ jobs:
         run: |
           az vm create \
             --resource-group Test \
-            --name cis-test \
+            --name cis-test1 \
             --image UbuntuLTS \
             --admin-username azureuser \
             --admin-password Password@123\
@@ -32,16 +34,21 @@ jobs:
         run: |
           az vm run-command invoke \
             --resource-group Test \
-            --name cis-test \
+            --name cis-test1 \
             --command-id RunShellScript \
             --scripts "sudo yum update -y" \
             --output table
 
-      - name: Install NGINX
+
+
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install the GPG key
         run: |
           az vm run-command invoke \
-            --resource-group Test \
-            --name cis-test \
-            --command-id RunShellScript \
-            --scripts "su -c curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg" \
-            --output table
+          --resource-group Test \
+          --name cis-test1 \
+          --command-id RunShellScript \
+          --scripts "su -c curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg" \
+          -- output table
