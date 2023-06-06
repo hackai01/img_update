@@ -19,7 +19,7 @@ jobs:
         run: |
           az vm create \
             --resource-group Test \
-            --name cis-test \
+            --name cis-test2 \
             --image UbuntuLTS \
             --admin-username azureuser \
             --admin-password Password@123\
@@ -34,7 +34,7 @@ jobs:
         run: |
           az vm run-command invoke \
             --resource-group Test \
-            --name cis-test \
+            --name cis-test2 \
             --command-id RunShellScript \
             --scripts "sudo yum update -y" \
             --output table
@@ -58,7 +58,6 @@ jobs:
         run: |
           az vm run-command invoke \
             --resource-group Test \
-            --name cis-test \
+            --name cis-test2 \
             --command-id RunShellScript \
-            --scripts "su -c curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg" \
-            -- output table
+            --scripts "su -c curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg"
