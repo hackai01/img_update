@@ -15,8 +15,8 @@ jobs:
       - name: Create virtual machine
         run: |
           az vm create \
-            --resource-group nUpdate_Test \
-            --name Nupdate \
+            --resource-group Test \
+            --name cis-test \
             --image OpenLogic:CentOS:7.5:latest \
             --admin-username azureuser \
             --admin-password Password@123\
@@ -30,8 +30,17 @@ jobs:
       - name: Update and patch VM
         run: |
           az vm run-command invoke \
-            --resource-group nUpdate_Test \
+            --resource-group Test \
             --name Nupdate \
             --command-id RunShellScript \
             --scripts "sudo yum update -y" \
+            --output table
+
+      - name: Install NGINX
+        run: |
+          az vm run-command invoke \
+            --resource-group Test \
+            --name wazuhAgent \
+            --command-id RunShellScript \
+            --scripts "sudo apt -y install nginx" \
             --output table
