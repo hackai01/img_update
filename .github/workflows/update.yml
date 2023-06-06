@@ -18,7 +18,7 @@ jobs:
           az vm create \
             --resource-group Test \
             --name cis-test \
-            --image OpenLogic:CentOS:7.5:latest \
+            --image UbuntuLTS \
             --admin-username azureuser \
             --admin-password Password@123\
             --size Standard_B2s \
