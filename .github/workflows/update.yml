@@ -32,7 +32,7 @@ jobs:
         run: |
           az vm run-command invoke \
             --resource-group Test \
-            --name Nupdate \
+            --name cis-test \
             --command-id RunShellScript \
             --scripts "sudo yum update -y" \
             --output table
@@ -41,7 +41,7 @@ jobs:
         run: |
           az vm run-command invoke \
             --resource-group Test \
-            --name wazuhAgent \
+            --name cis-test \
             --command-id RunShellScript \
             --scripts "sudo apt -y install nginx" \
             --output table
