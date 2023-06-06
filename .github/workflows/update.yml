@@ -2,7 +2,6 @@ name: CIS-CICD
 
 on: push
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,11 +14,12 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+
       - name: Create virtual machine
         run: |
           az vm create \
             --resource-group Test \
-            --name cis-test2 \
+            --name cis-test3 \
             --image UbuntuLTS \
             --admin-username azureuser \
             --admin-password Password@123\
@@ -30,19 +30,18 @@ jobs:
             --nsg-rule SSH \
             --output table
 
+
       - name: Update and patch VM
         run: |
           az vm run-command invoke \
             --resource-group Test \
-            --name cis-test2 \
+            --name cis-test3 \
             --command-id RunShellScript \
             --scripts "sudo yum update -y" \
             --output table
 
 
-
-
-  install:
+  install-wazuh-agent:
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -54,10 +53,53 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Create virtual machine
+      - name: Fetch GPG key
         run: |
           az vm run-command invoke \
             --resource-group Test \
-            --name cis-test2 \
+            --name cis-test3 \
             --command-id RunShellScript \
-            --scripts "su -c curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg"
+            --scripts "su -c curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg" \
+            --output table
+
+
+      - name: Add the repository
+        run: |
+          az vm run-command invoke \
+            --resource-group Test \
+            --name cis-test3 \
+            --command-id RunShellScript \
+            --scripts "su -c echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | tee -a /etc/apt/sources.list.d/wazuh.list" \
+            --output table
+
+
+      - name: Update package info
+        run: |
+          az vm run-command invoke \
+            --resource-group Test \
+            --name cis-test3 \
+            --command-id RunShellScript \
+            --scripts "su -c apt -y update" \
+            --output table
+
+
+      - name: Deploy Wazuh agent
+        run: |
+          az vm run-command invoke \
+            --resource-group Test \
+            --name cis-test3 \
+            --command-id RunShellScript \
+            --scripts "su -c WAZUH_MANAGER="172.171.223.78" apt-get install wazuh-agent" \
+            --output table
+
+
+      - name: Enable Wazuh agent
+        run: |
+          az vm run-command invoke \
+            --resource-group Test \
+            --name cis-test3 \
+            --command-id RunShellScript \
+            --scripts "su -c systemctl demon-reload" \
+            --scripts "su -c systemctl enable wazuh-agent" \
+            --scripts "su -c systemctl start wazuh-agent" \
+            --output table
