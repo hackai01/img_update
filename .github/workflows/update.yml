@@ -7,7 +7,7 @@ on:
 
 env:
   AZURE_RG_NAME: "Test"
-  AZURE_VM_NAME: "web_app"
+  AZURE_VM_NAME: "web_app2"
   AZURE_VM_SIZE: "Standard_B2s" # VM size (adjust as needed)
   AZURE_IMAGE_URN: "Canonical:UbuntuServer:18.04-LTS:latest" # Ubuntu Server 18.04 LTS (adjust as needed)
   AZURE_USER: "azureuser"
@@ -69,8 +69,8 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Run commands on Azure VM
-        run: |
-          ssh -o StrictHostKeyChecking=no azureuser@${{ env.AZURE_VM_NAME }} << EOF
-            sudo apt update
-            sudo apt install -y nginx
+#      - name: Run commands on Azure VM
+#        run: |
+#          ssh -o StrictHostKeyChecking=no azureuser@${{ env.AZURE_VM_NAME }} << EOF
+#            sudo apt update
+#            sudo apt install -y nginx
