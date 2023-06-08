@@ -19,7 +19,7 @@ jobs:
         run: |
           az vm create \
             --resource-group Test \
-            --name wazuh-agent-test1 \
+            --name wazuh-agent-test-N \
             --image UbuntuLTS \
             --admin-username azureuser \
             --admin-password Password@123\
@@ -41,35 +41,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Fetch GPG Key
-        run: |
-          sudo curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH > wazuh.gpg
-
-
-      - name: Copy GPG key to dir
-        run: |
-          sudo gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import
-
-
-      - name: Chmod GPG key
-        run: |
-          sudo chmod 644 /usr/share/keyrings/wazuh.gpg
-
-
-      - name: Add the Repo
-        run: |
-          sudo echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee -a /etc/apt/sources.list.d/wazuh.list
 
       - name: Test install NGINX
         run: |
           sudo apt -y install nginx
-
-      - name: Update
-        run: |
-          sudo apt -y update
