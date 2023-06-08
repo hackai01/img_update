@@ -1,0 +1,63 @@
+name: Build Azure Ubuntu VM with Wazuh Agent
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AZURE_RG_NAME: "Test"
+#  AZURE_LOCATION: "your-location" only needed if also creating RG
+  AZURE_VM_IP: "your-vm-name"
+  AZURE_VM_SIZE: "Standard_B2s" # VM size (adjust as needed)
+  AZURE_IMAGE_URN: "Canonical:UbuntuServer:18.04-LTS:latest" # Ubuntu Server 18.04 LTS (adjust as needed)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+#      - name: Create Azure Resource Group
+#        run: az group create --name ${{ env.AZURE_RG_NAME }} --location ${{ env.AZURE_LOCATION }}
+
+      - name: Create Azure VM
+        run: |
+          az vm create \
+            --resource-group ${{ env.AZURE_RG_NAME }} \
+            --name ${{ env.AZURE_VM_IP }} \
+            --image ${{ env.AZURE_IMAGE_URN }} \
+            --size ${{ env.AZURE_VM_SIZE }} \
+            --admin-username azureuser \
+            --generate-ssh-keys
+
+      - name: Show Azure VM IP Address
+        run: az vm list-ip-addresses --resource-group ${{ env.AZURE_RG_NAME }} --name ${{ env.AZURE_VM_IP }} --query "[0].virtualMachine.network.publicIpAddresses[0].ipAddress" -o tsv
+
+      - name: Install Wazuh Agent
+        run: |
+          ssh azureuser@${{ env.AZURE_VM_IP }}IP "wget -qO - https://packages.wazuh.com/key/GPG-KEY-WAZUH | sudo apt-key add -"
+          ssh azureuser@${{ env.AZURE_VM_IP }}IP "echo 'deb https://packages.wazuh.com/4.x/apt/ stable main' | sudo tee /etc/apt/sources.list.d/wazuh.list"
+          ssh azureuser@${{ env.AZURE_VM_IP }}IP "sudo apt-get update"
+          ssh azureuser@${{ env.AZURE_VM_IP }}IP "sudo apt-get install wazuh-agent"
+
+      - name: Set up SSH connection
+        uses: webfactory/ssh-agent@v0.5.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Run commands on Azure VM
+        run: |
+          ssh -o StrictHostKeyChecking=no azureuser@${{ env.AZURE_VM_IP }} << EOF
+            # Commands to run on the Azure VM
+            sudo apt update
+            sudo apt install -y wazuh-agent
+            # Additional commands...
+            # Command 1
+            # Command 2
+            # Command 3
+          EOF
