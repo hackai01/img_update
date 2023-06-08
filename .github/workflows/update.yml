@@ -47,7 +47,7 @@ jobs:
           sudo curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH
 
 
-      -name: Copy GPG key to dir
+      - name: Copy GPG key to dir
         run: |
           gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import
 
