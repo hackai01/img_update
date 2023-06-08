@@ -19,8 +19,8 @@ jobs:
         run: |
           az vm create \
             --resource-group Test \
-            --name cis-test-nginx \
-            --image /subscriptions/384f2700-6afb-42c8-886e-d939e5068982/resourceGroups/Test/providers/Microsoft.Compute/images/cis-test-nginx-image \
+            --name cis-test-wazuh-agent \
+            --image UbuntuLTS \
             --admin-username azureuser \
             --admin-password Password@123\
             --size Standard_B2s \
@@ -57,12 +57,3 @@ jobs:
       - name: Update
         run: |
           sudo apt -y update
-
-
- #     - name: Deallocate VM
- #       run: az vm deallocate --resource-group Test --name cis-test-nginx
-
-
-#      - name: Cleanup resources
-#        run: |
-#          az group delete --name Test --yes --no-wait
