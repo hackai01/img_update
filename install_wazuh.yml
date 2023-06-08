@@ -1,0 +1,41 @@
+name: Install Wazuh Agent on Azure VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  install-wazuh-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: SSH to Azure VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: 13.92.170.31
+          username: azureuser
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Download Wazuh GPG Key
+        run: |
+          wget -O /tmp/wazuh.gpg https://packages.wazuh.com/key/GPG-KEY-WAZUH
+          sudo apt-key add /tmp/wazuh.gpg
+
+      - name: Add Wazuh Repository
+        run: |
+          echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee /etc/apt/sources.list.d/wazuh.list
+
+      - name: Update Package Lists
+        run: sudo apt update
+
+      - name: Install Wazuh Agent
+        run: sudo apt install -y wazuh-agent
