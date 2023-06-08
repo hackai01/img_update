@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       
       - name: Login to Azure
         uses: azure/login@v1
@@ -19,7 +19,7 @@ jobs:
         run: |
           az vm create \
             --resource-group Test \
-            --name wazuh-agent-test-NX \
+            --name wazuh-agent-test-v3 \
             --image UbuntuLTS \
             --admin-username azureuser \
             --admin-password Password@123\
