@@ -32,7 +32,7 @@ jobs:
             --name ${{ env.AZURE_VM_NAME }} \
             --image ${{ env.AZURE_IMAGE_URN }} \
             --admin-username ${{ env.AZURE_USER}} \
-            --admin-password ${{ env.AZURR_ADMIN_PASSWD }} \
+            --admin-password ${{ env.AZURE_ADMIN_PASSWD }} \
             --size Standard_B2s \
             --storage-sku Standard_LRS \
             --data-disk-sizes-gb 50 \
