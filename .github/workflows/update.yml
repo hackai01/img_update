@@ -11,7 +11,7 @@ env:
   AZURE_VM_SIZE: "Standard_B2s" # VM size (adjust as needed)
   AZURE_IMAGE_URN: "Canonical:UbuntuServer:18.04-LTS:latest" # Ubuntu Server 18.04 LTS (adjust as needed)
   AZURE_USER: "azureuser"
-  AZURE_ADMIN_PASSWD: "Passwd@123"
+  AZURE_ADMIN_PASSWD: "Password@123"
 #  AZURE_LOCATION: "your-location" only needed if also creating RG
 
 jobs:
