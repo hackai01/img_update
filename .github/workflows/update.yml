@@ -17,7 +17,7 @@ jobs:
         run: |
           az vm create \
             --resource-group Test \
-            --name cis-test5 \
+            --name cis-test1 \
             --image /subscriptions/384f2700-6afb-42c8-886e-d939e5068982/resourceGroups/Test/providers/Microsoft.Compute/images/cis-test-image \
             --admin-username azureuser \
             --admin-password Password@123\
@@ -28,15 +28,15 @@ jobs:
             --nsg-rule SSH \
             --output table
 
-      - name: Sleep for 30 seconds
+      - name: Sleep for 1 min to allow Chef Agent to become enabled
         run: |
-          sleep 30s
+          sleep 120s
 
 
       - name: Deallocate VM
-        run: az vm deallocate --resource-group myResourceGroup --name myVM
+        run: az vm deallocate --resource-group Test --name cis-test1
 
 
       - name: Cleanup resources
         run: |
-          az group delete --name myResourceGroup --yes --no-wait
+          az group delete --name Test --yes --no-wait
