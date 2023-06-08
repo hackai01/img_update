@@ -7,7 +7,7 @@ on:
 
 env:
   AZURE_RG_NAME: "Test"
-  AZURE_VM_NAME: "web_app1"
+  AZURE_VM_NAME: "web_app"
   AZURE_VM_SIZE: "Standard_B2s" # VM size (adjust as needed)
   AZURE_IMAGE_URN: "Canonical:UbuntuServer:18.04-LTS:latest" # Ubuntu Server 18.04 LTS (adjust as needed)
   AZURE_USER: "azureuser"
@@ -43,9 +43,8 @@ jobs:
             --public-ip-address-allocation static \
             --nsg-rule SSH \
             --output tsv \
-            --query 'publicIpAddresse' > 'ip_address.txt' \
-            \
-
+            --query 'publicIpAddress' > 'ip_address.txt' \
+            
           #Reads the IP and stores it as variable  
           ip_address=$(cat ip_address.txt)
           echo "::set-output name=ip-address::$ip_address"        
