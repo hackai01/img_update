@@ -1,5 +1,6 @@
-on: push
+name: CIS-CICD
 
+on: push
 
 jobs:
   build:
@@ -13,12 +14,13 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+
       - name: Create virtual machine
         run: |
           az vm create \
             --resource-group Test \
-            --name cis-test1 \
-            --image ${{ IMG_URL }} \
+            --name cis-test-nginx \
+            --image /subscriptions/384f2700-6afb-42c8-886e-d939e5068982/resourceGroups/Test/providers/Microsoft.Compute/images/cis-test-nginx-image-ZR \
             --admin-username azureuser \
             --admin-password Password@123\
             --size Standard_B2s \
@@ -28,15 +30,39 @@ jobs:
             --nsg-rule SSH \
             --output table
 
-      - name: Sleep for 1 min to allow Chef Agent to become enabled
+      - name: Update & Patch
         run: |
-          sleep 120s
+          sudo apt -y update && sudo apt -y upgrade
 
 
-      - name: Deallocate VM
-        run: az vm deallocate --resource-group Test --name cis-test1
+  install-wazuh-agent:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-
-      - name: Cleanup resources
+      - name: Install GPG Key
         run: |
-          az group delete --name Test --yes --no-wait
+          sudo curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg
+
+      - name: Add the Repo
+        run: |
+          sudo echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | tee -a /etc/apt/sources.list.d/wazuh.list
+
+      - name: Test install NGINX
+        run: |
+          sudo apt -y install nginx
+
+      - name: Update
+        run: |
+          sudo apt -y update
+
+
+ #     - name: Deallocate VM
+ #       run: az vm deallocate --resource-group Test --name cis-test-nginx
+
+
+#      - name: Cleanup resources
+#        run: |
+#          az group delete --name Test --yes --no-wait
