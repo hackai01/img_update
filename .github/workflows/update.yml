@@ -18,6 +18,10 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+          
+      - name: List files
+        run: ls -l
 
 
       - name: Add id_rsa.pub
