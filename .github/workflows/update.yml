@@ -19,7 +19,7 @@ jobs:
         run: |
           az vm create \
             --resource-group Test \
-            --name wazuh-agent-test \
+            --name wazuh-agent-test1 \
             --image UbuntuLTS \
             --admin-username azureuser \
             --admin-password Password@123\
