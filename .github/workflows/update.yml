@@ -22,8 +22,16 @@ jobs:
           
       - name: List files
         run: ls -l
-
-
-      - name: Add id_rsa.pub
+        
+      - name: Copy SSH key
         run: |
-          cat ${{ github.workspace }}/id_rsa.pub | ssh -o "StrictHostKeyChecking=no" -i ${{ secrets.SSH_PRIVATE_KEY }} azureuser@13.92.170.31 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
+          az vm user update \
+            --resource-group Test \
+            --name ssh-test1 \
+            --username azureuser \
+            --ssh-key-value "$(cat${GITHUB_WORKSPACE}/id_rsa.pub)"
+
+
+     # - name: Add id_rsa.pub
+     #   run: |
+     #     cat ${{ github.workspace }}/id_rsa.pub | ssh -o "StrictHostKeyChecking=no" -i ${{ secrets.SSH_PRIVATE_KEY }} azureuser@13.92.170.31 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
