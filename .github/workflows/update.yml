@@ -20,7 +20,7 @@ jobs:
           az vm create \
             --resource-group Test \
             --name cis-test4 \
-            --image subscriptions/384f2700-6afb-42c8-886e-d939e5068982/resourceGroups/Test/providers/Microsoft.Compute/images/cis-test-FUCK-MS \
+            --image /subscriptions/384f2700-6afb-42c8-886e-d939e5068982/resourceGroups/Test/providers/Microsoft.Compute/images/cis-test-FUCK-MS \
             --admin-username azureuser \
             --admin-password Password@123\
             --size Standard_B2s \
