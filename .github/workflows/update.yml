@@ -5,72 +5,21 @@ on:
     branches:
       - main
 
-env:
-  AZURE_RG_NAME: "Test"
-  AZURE_VM_NAME: "web_app2"
-  AZURE_VM_SIZE: "Standard_B2s" # VM size (adjust as needed)
-  AZURE_IMAGE_URN: "Canonical:UbuntuServer:18.04-LTS:latest" # Ubuntu Server 18.04 LTS (adjust as needed)
-  AZURE_USER: "azureuser"
-  AZURE_ADMIN_PASSWD: "Password@123"
-#  AZURE_LOCATION: "your-location" only needed if also creating RG
-
 jobs:
   build-vm:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repo
+      - name: Checout Repo
         uses: actions/checkout@v2
-        
-        
+
+
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
 
-      - name: Create virtual machine
+      - name: Add id_rsa.pub
         run: |
-          az vm create \
-            --resource-group ${{ env.AZURE_RG_NAME }} \
-            --name ${{ env.AZURE_VM_NAME }} \
-            --image ${{ env.AZURE_IMAGE_URN }} \
-            --admin-username ${{ env.AZURE_USER}} \
-            --admin-password ${{ env.AZURE_ADMIN_PASSWD }} \
-            --size Standard_B2s \
-            --storage-sku Standard_LRS \
-            --data-disk-sizes-gb 50 \
-            --public-ip-address-allocation static \
-            --nsg-rule SSH \
-            --output tsv \
-            --query 'publicIpAddress' > 'ip_address.txt' \
-            
-          #Reads the IP and stores it as variable  
-          ip_address=$(cat ip_address.txt)
-          echo "::set-output name=ip-address::$ip_address"        
-
-
-  deploy-key:
-    needs: build-vm
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-        
-        
-      - name: add id_rsa.pub
-        env:
-          VM_IP_ADDRESS: ${{ needs.build-vm.outputs.create-vm }}
-        run: |
-          cat id_rsa.pub | ssh -o "StrictHostKeyChecking=no" -i ${{ secrets.SSH_PRIVATE_KEY }}  azureuser@VM_IP_ADDRESS 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorised_keys'
-
-      - name: Set up SSH connection
-        uses: webfactory/ssh-agent@v0.5.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-#      - name: Run commands on Azure VM
-#        run: |
-#          ssh -o StrictHostKeyChecking=no azureuser@${{ env.AZURE_VM_NAME }} << EOF
-#            sudo apt update
-#            sudo apt install -y nginx
+          cat id_rsa.pub | ssh -o "StrictHostKeyChecking=no" -i ${{ secrets.SSH_PRIVATE_KEY }}  azureuser@13.92.170.31 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorised_keys'
