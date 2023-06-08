@@ -22,4 +22,4 @@ jobs:
 
       - name: Add id_rsa.pub
         run: |
-          cat id_rsa.pub | ssh -o "StrictHostKeyChecking=no" -i ${{ secrets.SSH_PRIVATE_KEY }}  azureuser@13.92.170.31 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorised_keys'
+          cat id_rsa.pub | ssh -o "StrictHostKeyChecking=no" -i ${{ secrets.SSH_PRIVATE_KEY }} azureuser@13.92.170.31 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorised_keys'
