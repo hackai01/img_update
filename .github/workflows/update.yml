@@ -19,7 +19,7 @@ jobs:
         run: |
           az vm create \
             --resource-group Test \
-            --name cis-test-wazuh-agent \
+            --name wazuh-agent-test \
             --image UbuntuLTS \
             --admin-username azureuser \
             --admin-password Password@123\
@@ -42,13 +42,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install GPG Key
+      - name: Fetch GPG Key
         run: |
-          sudo curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg
+          sudo curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH
+
+
+      -name: Copy GPG key to dir
+        run: |
+          gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import
+
+
+      - name: Chmod GPG key
+        run: |
+          chomd 644 /usr/share/keyrings/wazuh.gpg
+
 
       - name: Add the Repo
         run: |
-          su -c echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | tee -a /etc/apt/sources.list.d/wazuh.list
+          sudo echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | tee -a /etc/apt/sources.list.d/wazuh.list
 
       - name: Test install NGINX
         run: |
@@ -57,3 +68,12 @@ jobs:
       - name: Update
         run: |
           sudo apt -y update
+
+
+ #     - name: Deallocate VM
+ #       run: az vm deallocate --resource-group Test --name cis-test-nginx
+
+
+#      - name: Cleanup resources
+#        run: |
+#          az group delete --name Test --yes --no-wait
