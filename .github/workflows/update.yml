@@ -1,4 +1,4 @@
-name: Build Azure Ubuntu VM with Wazuh Agent
+name: Install Wazuh Agent on Azure VM
 
 on:
   push:
@@ -6,31 +6,36 @@ on:
       - main
 
 jobs:
-  build-vm:
+  install-wazuh-agent:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checout Repo
+      - name: Checkout Repo
         uses: actions/checkout@v2
-
 
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
-          
-      - name: List files
-        run: ls -l
-        
-      - name: Install Wazuh Agent
+
+      - name: SSH to Azure VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: 13.92.170.31
+          username: azureuser
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Download Wazuh GPG Key
         run: |
-          ssh azureuser@13.92.170.31 "wget -qO - https://packages.wazuh.com/key/GPG-KEY-WAZUH | sudo apt-key add -"
-          ssh azureuser@13.92.170.31 "echo 'deb https://packages.wazuh.com/4.x/apt/ stable main' | sudo tee /etc/apt/sources.list.d/wazuh.list"
-          ssh azureuser@13.92.170.31 "sudo apt-get install wazuh-agent"
-          ssh azureuser@13.92.170.31 "sudo apt-get update"
+          wget -O /tmp/wazuh.gpg https://packages.wazuh.com/key/GPG-KEY-WAZUH
+          sudo apt-key add /tmp/wazuh.gpg
 
+      - name: Add Wazuh Repository
+        run: |
+          echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee /etc/apt/sources.list.d/wazuh.list
 
-     # - name: Add id_rsa.pub
-     #   run: |
-     #     cat ${{ github.workspace }}/id_rsa.pub | ssh -o "StrictHostKeyChecking=no" -i ${{ secrets.SSH_PRIVATE_KEY }} azureuser@13.92.170.31 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
+      - name: Update Package Lists
+        run: sudo apt update
+
+      - name: Install Wazuh Agent
+        run: sudo apt install -y wazuh-agent
