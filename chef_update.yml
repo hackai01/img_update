@@ -1,0 +1,42 @@
+on: push
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create virtual machine
+        run: |
+          az vm create \
+            --resource-group Test \
+            --name cis-test1 \
+            --image ${{ IMG_URL }} \
+            --admin-username azureuser \
+            --admin-password Password@123\
+            --size Standard_B2s \
+            --storage-sku Standard_LRS \
+            --data-disk-sizes-gb 50 \
+            --public-ip-address-allocation static \
+            --nsg-rule SSH \
+            --output table
+
+      - name: Sleep for 1 min to allow Chef Agent to become enabled
+        run: |
+          sleep 120s
+
+
+      - name: Deallocate VM
+        run: az vm deallocate --resource-group myResourceGroup --name myVM
+
+
+      - name: Cleanup resources
+        run: |
+          az group delete --name Test --yes --no-wait
