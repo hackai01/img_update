@@ -27,9 +27,9 @@ jobs:
           #key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
            sudo apt -y update
-           wget -O /tmp/wazuh.gpg https://packages.wazuh.com/key/GPG-KEY-WAZUH
+           sudo wget -O /tmp/wazuh.gpg https://packages.wazuh.com/key/GPG-KEY-WAZUH
            sudo apt-key add /tmp/wazuh.gpg
-           echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee /etc/apt/sources.list.d/wazuh.list
+           sudo echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee /etc/apt/sources.list.d/wazuh.list
            sudo apt -y update
 #           WAZUH-MANAGER="172.171.223.78" sudo apt -y install wazuh-agent
 #           sudo systemctl demoon-reload
