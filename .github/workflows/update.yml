@@ -21,6 +21,7 @@ jobs:
       - name: Setup Wazuh agent
         uses: appleboy/ssh-action@master
         with:
+        #I will need to var this host IP. Theres logic to pull the server ip and add to a var s part ofthe oworkflow. 
           host: 13.92.170.31
           username: azureuser
           password: Password@123
@@ -35,6 +36,11 @@ jobs:
 #           sudo systemctl daemon-reload
 #           sudo systemctl enable wazuh-agent
 #           sudo systemctl start wazuh-agent
+
+
+#Ok so this works., The Pub IP is neeed atm for the wazuh-manager in the ossec conf. 
+#A rule will need adding to allow the agents server IP through to the manager. ive created a NSG with a few rules in. Im sure you can use az cmd to add ips to a nsg
+
 
  #     - name: Download Wazuh GPG Key
  #       run: |
