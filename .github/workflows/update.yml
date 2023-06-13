@@ -18,26 +18,33 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: SSH to Azure VM
+      - name: Setup Wazuh agent
         uses: appleboy/ssh-action@master
         with:
           host: 13.92.170.31
           username: azureuser
           password: Password@123
           #key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: sudo apt -y install nginx
+          script: |
+           sudo apt -y update
+           wget -O /tmp/wazuh.gpg https://packages.wazuh.com/key/GPG-KEY-WAZUH
+           sudo apt-key add /tmp/wazuh.gpg
+           echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee /etc/apt/sources.list.d/wazuh.list
+           sudo apt -y update
+           sudo apt -y install wazuh-agent
 
-      - name: Download Wazuh GPG Key
-        run: |
-          wget -O /tmp/wazuh.gpg https://packages.wazuh.com/key/GPG-KEY-WAZUH
-          sudo apt-key add /tmp/wazuh.gpg
+ #     - name: Download Wazuh GPG Key
+ #       run: |
+ #         wget -O /tmp/wazuh.gpg https://packages.wazuh.com/key/GPG-KEY-WAZUH
+ #         sudo apt-key add /tmp/wazuh.gpg
 
-      - name: Add Wazuh Repository
-        run: |
-          echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee /etc/apt/sources.list.d/wazuh.list
+ #     - name: Add Wazuh Repository
+ #       run: |
+ #         echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee /etc/apt/sources.list.d/wazuh.list
 
-      - name: Update Package Lists
-        run: sudo apt update
+ #     - name: Update Package Lists
+ #       run: sudo apt update
 
-      - name: Install Wazuh Agent
-        run: sudo apt install -y wazuh-agent
+ #     - name: Install Wazuh Agent
+ #       run: sudo apt install -y wazuh-agent
+#
