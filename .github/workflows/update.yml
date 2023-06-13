@@ -23,7 +23,8 @@ jobs:
         with:
           host: 13.92.170.31
           username: azureuser
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: Password@123
+          #key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Download Wazuh GPG Key
         run: |
