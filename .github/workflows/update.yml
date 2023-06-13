@@ -6,12 +6,24 @@ on:
       - main
 
 jobs:
+  pull-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+  
+  
   install-wazuh-agent:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Azure Login
         uses: azure/login@v1
@@ -32,28 +44,12 @@ jobs:
            sudo apt-key add /tmp/wazuh.gpg
            sudo echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee /etc/apt/sources.list.d/wazuh.list
            sudo apt -y update
-#           sudo WAZUH_MANAGER="IP" sudo apt -y install wazuh-agent
-#           sudo systemctl daemon-reload
-#           sudo systemctl enable wazuh-agent
-#           sudo systemctl start wazuh-agent
+           sudo WAZUH_MANAGER="IP" sudo apt -y install wazuh-agent
+           sudo systemctl daemon-reload
+           sudo systemctl enable wazuh-agent
+           sudo systemctl start wazuh-agent
 
 
 #Ok so this works., The Pub IP is neeed atm for the wazuh-manager in the ossec conf. 
 #A rule will need adding to allow the agents server IP through to the manager. ive created a NSG with a few rules in. Im sure you can use az cmd to add ips to a nsg
 
-
- #     - name: Download Wazuh GPG Key
- #       run: |
- #         wget -O /tmp/wazuh.gpg https://packages.wazuh.com/key/GPG-KEY-WAZUH
- #         sudo apt-key add /tmp/wazuh.gpg
-
- #     - name: Add Wazuh Repository
- #       run: |
- #         echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee /etc/apt/sources.list.d/wazuh.list
-
- #     - name: Update Package Lists
- #       run: sudo apt update
-
- #     - name: Install Wazuh Agent
- #       run: sudo apt install -y wazuh-agent
-#
