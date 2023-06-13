@@ -34,6 +34,7 @@ jobs:
   
   install-wazuh-agent:
     runs-on: ubuntu-latest
+    needs: pull-build
 
     steps:
       - name: Checkout Repo
