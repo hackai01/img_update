@@ -15,55 +15,10 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
-      - name: Build vm
-        run: |
-          az vm create \
-            --resource-group Test \
-            --name cis-check1 \
-            --image /subscriptions/384f2700-6afb-42c8-886e-d939e5068982/resourcegroups/Test/providers/Microsoft.Compute/images/cis-check-image-20230613180658 \
-            --admin-username azureuser \
-            --admin-password Password@123 \
-            --size Standard_B2s \
-            --storage-sku Standard_LRS \
-            --data-disk-sizes-gb 50 \
-            --generate-ssh-keys \
-            --nsg-rule SSH 
-  
-  
-  install-wazuh-agent:
-    runs-on: ubuntu-latest
-    needs: pull-build
 
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-
-      - name: Azure Login
-        uses: azure/login@v1
+      - name: Copy single file to remote
+        uses: garygrossgarten/github-action-scp@release
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Setup Wazuh agent
-        uses: appleboy/ssh-action@master
-        with:
-        #I will need to var this host IP. Theres logic to pull the server ip and add to a var s part ofthe oworkflow. 
+          local: cis-blacklist.conf
+          remote: etc/modprobe.d/cis-blacklist.conf
           host: 13.92.170.31
-          username: azureuser
-          password: Password@123
-          #key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-           sudo apt -y update
-           sudo wget -O /tmp/wazuh.gpg https://packages.wazuh.com/key/GPG-KEY-WAZUH
-           sudo apt-key add /tmp/wazuh.gpg
-           sudo echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee /etc/apt/sources.list.d/wazuh.list
-           sudo apt -y update
-           sudo WAZUH_MANAGER="IP" sudo apt -y install wazuh-agent
-           sudo systemctl daemon-reload
-           sudo systemctl enable wazuh-agent
-           sudo systemctl start wazuh-agent
-
-
-#Ok so this works., The Pub IP is neeed atm for the wazuh-manager in the ossec conf. 
-#A rule will need adding to allow the agents server IP through to the manager. ive created a NSG with a few rules in. Im sure you can use az cmd to add ips to a nsg
-
