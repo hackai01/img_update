@@ -20,7 +20,7 @@ jobs:
         uses: garygrossgarten/github-action-scp@release
         with:
           local: cis-blacklist.conf
-          remote: etc/modprobe.d/cis-blacklist.conf
+          remote: /etc/modprobe.d/cis-blacklist.conf
           host: 13.92.170.31
           username: azureuser
           password: Password@123
