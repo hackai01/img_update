@@ -25,7 +25,7 @@ jobs:
           username: azureuser
           password: Password@123
           #key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: apt -y install nginx
+          script: sudo apt -y install nginx
 
       - name: Download Wazuh GPG Key
         run: |
