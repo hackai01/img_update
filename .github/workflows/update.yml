@@ -1,9 +1,8 @@
 name: Install Wazuh Agent on Azure VM
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+
 
 jobs:
   pull-build:
