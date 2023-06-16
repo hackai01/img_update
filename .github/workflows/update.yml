@@ -16,20 +16,20 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Copy single file to remote
-        uses: garygrossgarten/github-action-scp@release
-        with:
-          local: cis-blacklist.conf
-          remote: cis-blacklist.conf
-          host: 13.92.170.31
-          username: azureuser
-          password: Password@123
+  #    - name: Copy single file to remote
+  #       uses: garygrossgarten/github-action-scp@release
+  #      with:
+  #        local: cis-blacklist.conf
+  #        remote: cis-blacklist.conf
+  #        host: 13.92.170.31
+  #        username: azureuser
+  #        password: Password@123
           
-      - name: Copy to etc
-        uses: appleboy/ssh-action@master
-        with:
-          host: 13.92.170.31
-          username: azureuser
-          password: Password@123
-          script: |
-           sudo mv cis-blacklist.conf /etc/modprobe.d/
+  #    - name: Copy to etc
+  #      uses: appleboy/ssh-action@master
+  #      with:
+  #        host: 13.92.170.31
+  #        username: azureuser
+  #        password: Password@123
+  #        script: |
+  #         sudo mv cis-blacklist.conf /etc/modprobe.d/
