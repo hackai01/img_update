@@ -15,6 +15,9 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Run LS
+        run: sudo ls -a
 
   #    - name: Copy single file to remote
   #       uses: garygrossgarten/github-action-scp@release
