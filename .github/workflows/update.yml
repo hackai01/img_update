@@ -23,7 +23,7 @@ jobs:
         run: |
           az vm create \
             --resource-group Test \
-            --name cis-test2 \
+            --name cis-test10 \
             --image UbuntuLTS \
             --admin-username azureuser \
             --admin-password Password@123\
