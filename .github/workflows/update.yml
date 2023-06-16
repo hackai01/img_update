@@ -18,6 +18,20 @@ jobs:
           
       - name: Run LS
         run: sudo ls -a
+        
+      - name: Create virtual machine
+        run: |
+          az vm create \
+            --resource-group Test \
+            --name cis-test2 \
+            --image UbuntuLTS \
+            --admin-username azureuser \
+            --admin-password Password@123\
+            --size Standard_B2s \
+            --storage-sku Standard_LRS \
+            --data-disk-sizes-gb 50 \
+            --nsg-rule SSH
+
 
   #    - name: Copy single file to remote
   #       uses: garygrossgarten/github-action-scp@release
