@@ -3,50 +3,37 @@ name: Install Wazuh Agent on Azure VM
 on:
   workflow_dispatch:
 
-
 jobs:
-  pull-build:
+  install-wazuh-agent:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        
-      - name: Login to Azure
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
-      - name: Run LS
-        run: sudo ls -a
-        
-      - name: Create virtual machine
+
+      - name: SSH to Azure VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: 172.190.83.183
+          username: azureuser
+          key: secrets.KEY
+
+      - name: Download Wazuh GPG Key
         run: |
-          az vm create \
-            --resource-group Test \
-            --name cis-test10 \
-            --image UbuntuLTS \
-            --admin-username azureuser \
-            --admin-password Password@123\
-            --size Standard_B2s \
-            --storage-sku Standard_LRS \
-            --data-disk-sizes-gb 50 \
-            --nsg-rule SSH
+          wget -O /tmp/wazuh.gpg https://packages.wazuh.com/key/GPG-KEY-WAZUH
+          sudo apt-key add /tmp/wazuh.gpg
 
+      - name: Add Wazuh Repository
+        run: |
+          echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee /etc/apt/sources.list.d/wazuh.list
 
-  #    - name: Copy single file to remote
-  #       uses: garygrossgarten/github-action-scp@release
-  #      with:
-  #        local: cis-blacklist.conf
-  #        remote: cis-blacklist.conf
-  #        host: 13.92.170.31
-  #        username: azureuser
-  #        password: Password@123
-          
-  #    - name: Copy to etc
-  #      uses: appleboy/ssh-action@master
-  #      with:
-  #        host: 13.92.170.31
-  #        username: azureuser
-  #        password: Password@123
-  #        script: |
-  #         sudo mv cis-blacklist.conf /etc/modprobe.d/
+      - name: Update Package Lists
+        run: sudo apt update
+
+      - name: Install Wazuh Agent
+        run: sudo apt install -y wazuh-agent
