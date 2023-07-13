@@ -21,7 +21,7 @@ jobs:
         with:
           host: 172.190.83.183
           username: azureuser
-          key: secrets.KEY
+          key: secrets.SEC_SSH_KEY
 
       - name: Download Wazuh GPG Key
         run: |
