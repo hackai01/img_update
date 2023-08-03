@@ -14,14 +14,14 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZ_CREDS }}
 
       - name: SSH to Azure VM
         uses: appleboy/ssh-action@master
         with:
-          host: 172.190.83.183
+          host: 22.55.110.201
           username: azureuser
-          key: ${{ secrets.SEC_SSH_KEY }}
+          key: ${{ secrets.KEY_PEM }}
 
       - name: Download Wazuh GPG Key
         run: |
