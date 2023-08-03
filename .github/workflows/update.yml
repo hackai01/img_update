@@ -19,7 +19,7 @@ jobs:
       - name: SSH to Azure VM
         uses: appleboy/ssh-action@master
         with:
-          host: 22.55.110.201
+          host: 172.174.216.190
           username: azureadmin
           password: Password12345
           
