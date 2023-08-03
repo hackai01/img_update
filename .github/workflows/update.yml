@@ -20,8 +20,9 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: 22.55.110.201
-          username: azureuser
-          key: ${{ secrets.KEY_PEM }}
+          username: azureadmin
+          password: Password12345
+          
 
       - name: Download Wazuh GPG Key
         run: |
